@@ -20,7 +20,6 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggthemes)
 library(ggspatial)
-library(ggforce)
 library(raster)
 library(ggnewscale)
 library(gganimate)
@@ -28,7 +27,7 @@ library(gifski)
 
 
 library(UkraineCrops)
-data(fire_mod_df)
+
 
 ```
 
@@ -39,9 +38,6 @@ We first load the library and relevant shipping data.
 ```{r echo = TRUE, eval = FALSE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 
 library(UkraineCrops)
-
-data(cargo_month_df)
-
 
 ```
 We curate a dataset and map constrained to the the major ports in and out of Ukraine.
@@ -62,20 +58,8 @@ world_area <- world %>%  dplyr::filter(name %in% c('Ukraine', 'Russia',
                                                    'Romania', 'Moldova',
                                                    'Bulgaria', 'Turkey', 'Georgia',
                                                    'Greece'))
-
-cargo_month_df$date <- as.Date(paste("01", cargo_month_df$name), "%d %b.%Y")
-
-ships_war_df <- cargo_month_df %>% 
-  mutate_at(vars(date), dplyr::funs(year = lubridate::year, month = lubridate::month,
-                                    day =lubridate::day)) %>% 
-  filter(year > 2020, month < 7)
-
-ships_war_df$month_b <- format(ships_war_df$date, '%b')
-ships_war_df$month_b <- factor(ships_war_df$month_b, 
-                                            levels = c("Jan", "Feb", "Mar",
-                                                       "Apr", "May", "Jun"))
-
 ```
+
 
 We now plot the shipping routes through the Black Sea between 2021 and 2022 for January through to June. This represents Figure 4 of Wellington et al. (2022)
 
@@ -88,8 +72,8 @@ facet_map_vert <- ggplot() +
   theme(panel.grid.major = 
           element_line(color = gray(.5), linetype = 'dashed', size = 0.5),
         panel.background = element_rect(fill = 'aliceblue')) +
-  new_scale_fill() +
-  geom_raster(data = ships_war_df, aes(x=x, y=y, fill=value)) +
+  #new_scale_fill() +
+  #geom_raster(data = ships_war_df, aes(x=x, y=y, fill=value)) +
   scale_fill_viridis_c(limits = c(0, 100), oob = scales::squish, 
                        name=expression(paste("Route Density/", km^2, "/month")),
                        alpha=0.5) +
@@ -124,7 +108,7 @@ facet_map_vert <- ggplot() +
                          style = north_arrow_fancy_orienteering,
                          height= unit(0.5, "cm"),
                          width= unit(0.5, "cm")) + 
-  facet_grid(month_b~year) +
+  #facet_grid(month_b~year) +
   theme(legend.position="bottom")
 
 facet_map_vert

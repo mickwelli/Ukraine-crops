@@ -37,6 +37,4 @@ Suggests:
     rmarkdown,
     markdown
 VignetteBuilder: knitr
-
-
-
+URL: https://mickwelli.github.io/Ukraine-crops/

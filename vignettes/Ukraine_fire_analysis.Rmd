@@ -4,7 +4,7 @@ author: "Michael Wellington, Roger Lawes and Petra Kuhnert"
 date: "4 August 2022"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Ukraine NDVI Analysis}
+  %\VignetteIndexEntry{Ukraine Fire Analysis}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
