@@ -14,6 +14,13 @@ library(maps)
 # Bring in NDVI data
 NDVI_mod_df <- readRDS('data/NDVI_mod_df.rds')
 
+# NDVI_mod_df includes a war term for pre and post 2022 calendar years, 
+# but we also need to create a pre and post-invasion term
+# (24th Feb 2022) which we do below.
+
+# Allocate factor for invasion
+NDVI_mod_df$inv <- as.factor(if_else(NDVI_mod_df$date < '2022-02-24', "0", "1"))
+
 # Bring in Ukraine bounds
 Ukr_bnds <- st_read('data/UKR_adm0.shp')
 
@@ -29,26 +36,37 @@ all_f <- NDVI ~
   ti(month, year, bs = c("cc", "cr"), k = c(12,11)) +  
   # space x time
   ti(x, y, year, d = c(2, 1), bs = c("gp", "cr"), 
-     k = c(50,11), m=list(2, NA))  ## MAY NEED TO MAKE k VARIABLE    
+     k = c(50,11), m=list(2, NA))   
+
+all_f_inv <- NDVI ~  
+  # factor for pre/ post-invasion
+  inv + 
+  # cyclic term for season
+  s(month, bs="cc", k=12, by=inv) +  
+  # smooth term for space
+  s(x,y, bs='gp', k=50, by=inv) +
+  # space x time
+  ti(x, y, month, d = c(2, 1), bs = c("gp", "cr"), 
+     k = c(50,12), m=list(2, NA), by=inv)   
 
 all_f_war <- NDVI ~  
-  # factor term for war
+  # factor for pre/ post-2022
   war + 
   # cyclic term for season
   s(month, bs="cc", k=12, by=war) +  
   # smooth term for space
   s(x,y, bs='gp', k=50, by=war) +
-  # seasonal within year
   # space x time
   ti(x, y, month, d = c(2, 1), bs = c("gp", "cr"), 
-     k = c(50,12), m=list(2, NA), by=war)    
+     k = c(50,12), m=list(2, NA), by=war) 
 
 # Run GAMs for large datasets
 all_gam <- bam(all_f, data=NDVI_mod_df, discrete=TRUE, nthreads=8, rho=0.8)
 all_gam_war <- bam(all_f_war, data=NDVI_mod_df, discrete=TRUE, nthreads=8, rho=0.6)
+all_gam_inv <- bam(all_f_inv, data=NDVI_mod_df, discrete=TRUE, nthreads=8, rho=0.6)
 
 # Output shows effect of war on cropland NDVI
-summary(all_gam_war)
+summary(all_gam_inv)
 
 # Get predictions for plotting
 all_gam_war_pred <- predict(all_gam_war, se=TRUE)
