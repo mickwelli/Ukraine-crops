@@ -65,11 +65,7 @@ all_f_war <- NDVI ~
 all_gam <- bam(all_f, data=NDVI_mod_df, discrete=TRUE, nthreads=8, rho=0.8)
 
 # Check for temporal and spatial autocorrelation
-resids <- residuals.gam(all_gam)
-acf_plot_ar <- acf(resids, type = "correlation")
-
-# Temporal autocorrelation plot, decreasing with lag but still some evident.
-plot(acf_plot_ar)
+check_resid(all_gam)
 
 # variogram for spatial autocorrelation
 data_pred <- data.frame(resids = resids, long = NDVI_mod_df$x, lat = NDVI_mod_df$y)
