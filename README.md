@@ -10,9 +10,6 @@ site](https://mickwelli.github.io/UkraineCrops/) with vignettes.
 
 You can install the `UkraineCrops` package using the command below.
 
-    remotes::install_github(repo = "mickwelli/UkraineCrops", build_vignettes = TRUE)
-
-
 ## Authors
 
 Michael Wellington, Australian National University & CSIRO, Email:
@@ -37,3 +34,6 @@ Wellington et al., (2022). UkraineCrop: an R package housing reproducible code t
 ## References
 
 Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine, Nature Food, Under Review.
+=======
+    remotes::install_github(repo = "mickwelli/Ukraine-crops", build_vignettes = TRUE)
+
