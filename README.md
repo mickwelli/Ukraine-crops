@@ -3,7 +3,7 @@
 ## Code and data used to analyse Ukraine grain supply in 2022.
 
 There is a [`UkraineCrops` pkgdown
-site](https://mickwelli.github.io/UkraineCrops/) with vignettes.
+site](https://mickwelli.github.io/Ukraine-crops/) with vignettes.
 
 
 ## Installation

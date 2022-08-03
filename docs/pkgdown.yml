@@ -5,5 +5,8 @@ articles:
   Ukraine-NDVI-analysis: Ukraine-NDVI-analysis.html
   Ukraine_fire_analysis: Ukraine_fire_analysis.html
   Ukraine_ship_analysis: Ukraine_ship_analysis.html
-last_built: 2022-08-03T23:00Z
+last_built: 2022-08-03T23:19Z
+urls:
+  reference: https://mickwelli.github.io/Ukraine-crops/reference
+  article: https://mickwelli.github.io/Ukraine-crops/articles
 
