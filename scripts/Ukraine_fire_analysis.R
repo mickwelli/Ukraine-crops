@@ -15,8 +15,8 @@ library(maps)
 # Bring in fire data from FIRMS
 fire_mod_df <- readRDS('data/fire_mod_df_full.rds')
 
-# Note in that dims are 37 x 82, store this so we can calc. % fire pixels from total pixels
-pixels <- 37*82
+# Note during data download that we have 3034 pixels, store this so we can calc. % fire pixels from total pixels
+pixels <- 3034
 
 # % fire analysis 
 
