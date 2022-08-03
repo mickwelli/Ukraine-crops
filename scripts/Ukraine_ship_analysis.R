@@ -1,0 +1,85 @@
+library(ggplot2)
+library(sf)
+library(scales)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggthemes)
+library(ggspatial)
+library(ggforce)
+library(raster)
+library(tidyverse)
+library(ggnewscale)
+library(gganimate)
+library(gifski)
+
+cargo_month_df <- readRDS('cargo_month_df.rds')
+
+sf::sf_use_s2(FALSE)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+
+
+world_points<- st_centroid(world)
+world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
+
+world_area <- world %>%  dplyr::filter(name %in% c('Ukraine', 'Russia',
+                                                   'Romania', 'Moldova',
+                                                   'Bulgaria', 'Turkey', 'Georgia',
+                                                   'Greece'))
+
+cargo_month_df$date <- as.Date(paste("01", cargo_month_df$name), "%d %b.%Y")
+
+ships_war_df <- cargo_month_df %>% 
+  mutate_at(vars(date), dplyr::funs(year = lubridate::year, month = lubridate::month,
+                                    day =lubridate::day)) %>% 
+  filter(year > 2020, month < 7)
+
+facet_map_vert <- ggplot() + 
+  geom_sf(data = world_area, fill="grey", show.legend=FALSE) + 
+  coord_sf(xlim = c(25.5, 43.5), ylim = c(40.1, 48.1), expand = FALSE) + 
+  xlab('Longitude') + ylab('Latitude') + 
+  theme(panel.grid.major = 
+          element_line(color = gray(.5), linetype = 'dashed', size = 0.5),
+        panel.background = element_rect(fill = 'aliceblue')) +
+  new_scale_fill() +
+  geom_raster(data = ships_war_df, aes(x=x, y=y, fill=value)) +
+  scale_fill_viridis_c(limits = c(0, 100), oob = scales::squish, 
+                       name=expression(paste("Route Density/", km^2, "/month")),
+                       alpha=0.5) +
+  annotate(geom = "text", x = 40.3, y = 45.6, label = "RUSSIA", 
+           color = "grey28", size = 3) +
+  annotate(geom = "text", x = 33, y = 47.5, label = "UKRAINE", 
+           color = "grey28", size = 3) +
+  annotate(geom = "text", x = 34, y = 40.7, label = "TURKEY", 
+           color = "grey28", size = 3) +
+  annotate(geom = "text", x = 28.4, y = 47.4, label = "MOLDOVA", 
+           color = "grey28", size = 1.2, angle=-50) +
+  annotate(geom = "text", x = 42.4, y = 42.6, label = "GEORGIA", 
+           color = "grey28", size = 1.4, angle=-40) +
+  annotate(geom = "text", x = 26.9, y = 45.5, label = "ROMANIA", 
+           color = "grey28", size = 1.7, angle=-40) +
+  annotate(geom = "text", x = 26.7, y = 43.0, label = "BULGARIA", 
+           color = "grey28", size = 1.1, angle=-40) +
+  annotate(geom = "text", x = 36.5, y = 46.2, label = "Sea of Azov", 
+           fontface = "italic", color = "grey22", size = 1.3) +
+  annotate(geom = "text", x = 34.3, y = 43.4, label = "Black Sea", 
+           fontface = "italic", color = "grey22", size = 3) +
+  annotate(geom = "text", x = 37.6, y = 47.1, label = "Mariupol", 
+           fontface = "bold", color = "black", size = 2) +
+  annotate(geom = "text", x = 37.8, y = 44.7, label = "Novorossiysk", 
+           fontface = "bold", color = "black", size = 2) +
+  annotate(geom = "text", x = 30.8, y = 46.5, label = "Odesa", 
+           fontface = "bold", color = "black", size = 2) +
+  annotate(geom = "text", x = 28.7, y = 44.1, label = "Constanta", 
+           fontface = "bold", color = "black", size = 2) +
+  annotation_north_arrow(location = 'tr', which_north = 'true',
+                         pad_x = unit(0.05, 'in'), pad_y = unit(0.05, 'in'), 
+                         style = north_arrow_fancy_orienteering,
+                         height= unit(0.5, "cm"),
+                         width= unit(0.5, "cm")) + 
+  facet_grid(month~year) +
+  theme(legend.position="bottom")
+ggsave('facet_map_vert.jpg', plot=facet_map_vert, width=5, height=12, dpi=900)
+drive_upload('facet_map_vert.jpg')
