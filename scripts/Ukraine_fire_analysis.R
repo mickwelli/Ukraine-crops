@@ -41,6 +41,7 @@ cum_plot_dat <-  fire_mod_df %>% mutate(fire_inc=if_else(fire=="NaN", 0,1)) %>%
 
 head(cum_plot_dat)
 
+# Figure 3 in manuscript - cumulative fire area
 cumsum_fire_plot <- ggplot(data=cum_plot_dat) + geom_smooth(aes(x=month, y=fire_pc_cumsum, col=war, fill=war)) +
   scale_color_npg(name="") + scale_fill_npg(name="") +
   theme_bw() +  scale_y_continuous(labels = scales::percent) +
