@@ -36,6 +36,11 @@ ships_war_df <- cargo_month_df %>%
                                     day =lubridate::day)) %>% 
   filter(year > 2020, month < 7)
 
+ships_war_df$month_b <- format(ships_war_df$date, '%b')
+ships_war_df$month_b <- factor(ships_war_df$month_b, 
+                                            levels = c("Jan", "Feb", "Mar",
+                                                       "Apr", "May", "Jun"))
+
 facet_map_vert <- ggplot() + 
   geom_sf(data = world_area, fill="grey", show.legend=FALSE) + 
   coord_sf(xlim = c(25.5, 43.5), ylim = c(40.1, 48.1), expand = FALSE) + 
@@ -79,7 +84,7 @@ facet_map_vert <- ggplot() +
                          style = north_arrow_fancy_orienteering,
                          height= unit(0.5, "cm"),
                          width= unit(0.5, "cm")) + 
-  facet_grid(month~year) +
+  facet_grid(month_b~year) +
   theme(legend.position="bottom")
 ggsave('facet_map_vert.jpg', plot=facet_map_vert, width=5, height=12, dpi=900)
 drive_upload('facet_map_vert.jpg')
