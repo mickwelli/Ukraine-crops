@@ -8,4 +8,4 @@ This repo contains all data and code used to analyse Ukraine grain supply, excep
 
 You can install the `UkraineCrops` package using the command below.
 
-    remotes::install_github(repo = "mickwelli/UkraineCrops", build_vignettes = TRUE)
+    remotes::install_github(repo = "mickwelli/Ukraine-crops", build_vignettes = TRUE)
