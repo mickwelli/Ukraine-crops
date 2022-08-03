@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 <<<<<<< HEAD:inst/extdata/Ukraine_fire_analysis.R
+=======
+>>>>>>> 72f5e72e87ac89d687015adab6dade88988b07e3
 library(stringr)
 library(tidyverse)
 library(gratia)
@@ -51,6 +54,7 @@ cumsum_fire_plot <- ggplot(data=cum_plot_dat) + geom_smooth(aes(x=month, y=fire_
 ggsave('Ukr_cumsum_fire_plot.jpg', width=6, height=3, dpi=900, plot =cumsum_fire_plot)
 
 ######################### Ends ##################################
+<<<<<<< HEAD
 =======
 library(stringr)
 library(tidyverse)
@@ -105,3 +109,5 @@ ggsave('Ukr_cumsum_fire_plot.jpg', width=6, height=3, dpi=900, plot =cumsum_fire
 
 ######################### Ends ##################################
 >>>>>>> 0bc5429581ab6bfdb1790a342f97f4d18748a7c7:scripts/Ukraine_fire_analysis.R
+=======
+>>>>>>> 72f5e72e87ac89d687015adab6dade88988b07e3
