@@ -32,7 +32,7 @@ all_f <- NDVI ~
      k = c(50,11), m=list(2, NA))  ## MAY NEED TO MAKE k VARIABLE    
 
 all_f_war <- NDVI ~  
-  # smooth term for year
+  # factor term for war
   war + 
   # cyclic term for season
   s(month, bs="cc", k=12, by=war) +  
