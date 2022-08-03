@@ -1,0 +1,9 @@
+pandoc: 2.17.1.1
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  Ukraine-NDVI-analysis: Ukraine-NDVI-analysis.html
+  Ukraine_fire_analysis: Ukraine_fire_analysis.html
+  Ukraine_ship_analysis: Ukraine_ship_analysis.html
+last_built: 2022-08-03T23:00Z
+
