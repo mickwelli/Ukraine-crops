@@ -1,0 +1,7 @@
+pandoc: 2.14.1
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  Ukraine-NDVI-analysis: Ukraine-NDVI-analysis.html
+last_built: 2022-08-03T12:38Z
+
