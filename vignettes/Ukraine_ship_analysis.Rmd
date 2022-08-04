@@ -34,7 +34,7 @@ library(UkraineCrops)
 ## Overview
 The following script accompanies the paper by Wellington et al. (2022) that explores the shipping data and in particular, cargo ship routes between 2021 and 2022 for ports around the Ukraine.  
 
-We first load the library and relevant shipping data.
+We first load the library. This example demonstrates how to generate the map, though shipping data is not available in the vignette due to its size. The data can be downloaded from [EMODNET](https://www.emodnet-humanactivities.eu/view-data.php).
 ```{r echo = TRUE, eval = FALSE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 
 library(UkraineCrops)
@@ -61,7 +61,7 @@ world_area <- world %>%  dplyr::filter(name %in% c('Ukraine', 'Russia',
 ```
 
 
-We now plot the shipping routes through the Black Sea between 2021 and 2022 for January through to June. This represents Figure 4 of Wellington et al. (2022)
+We now plot the shipping routes through the Black Sea between 2021 and 2022 for January through to June. This is a demonstration of Figure 4 of Wellington et al. (2022), without the route density data.
 
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
 

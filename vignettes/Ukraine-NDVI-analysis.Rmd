@@ -139,12 +139,10 @@ We examine the fit of the model and check for temporal and spatial autocorrelati
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 
 # Temporal autocorrelation plot
-resids <- residuals.gam(all_gam_inv)
-acf_plot_ar <- acf(resids, type = "correlation")
-
-plot(acf_plot_ar)
+check_resid(all_gam, ask=FALSE)
 
 # Variogram for spatial autocorrelation
+resids <- residuals.gam(all_gam)
 data_pred <- data.frame(resids = resids, long = NDVI_mod_df$x, lat = NDVI_mod_df$y)
 coordinates(data_pred) <- ~long+lat
 # Select a sample for compute efficiency  

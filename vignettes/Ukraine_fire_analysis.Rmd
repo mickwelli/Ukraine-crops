@@ -37,12 +37,13 @@ data(fire_mod_df)
 
 ```
 
-We `tidy` the data to construct the percent fire pixels from total pixels in preparation for plotting.
+We `tidy` the data to construct the percent fire pixels from total pixels in preparation for plotting. We have selected pixels showing fire and omitted NAs from the dataset for this vignette to reduce data size. We therefore have to record the number of pixels in our original, larger dataset, so that we can calculate the % of pixels with active fires.
 
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
 
-# Note in that dims are 37 x 82, store this so we can calc. % fire pixels from total pixels
-pixels <- 37*82
+# Note that there are 3034 pixels during data extraction. 
+# Store this so we can calc. % fire pixels from total pixels
+pixels <- 3034
 
 # % fire analysis 
 month_pc_ts <- fire_mod_df %>% 
