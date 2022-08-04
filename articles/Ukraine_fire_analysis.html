@@ -88,10 +88,15 @@ resolutions for each day from the 1st of January 2012 through to the
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">fire_mod_df</span><span class="op">)</span></span></code></pre></div>
 <p>We <code>tidy</code> the data to construct the percent fire pixels
-from total pixels in preparation for plotting.</p>
+from total pixels in preparation for plotting. We have selected pixels
+showing fire and omitted NAs from the dataset for this vignette to
+reduce data size. We therefore have to record the number of pixels in
+our original, larger dataset, so that we can calculate the % of pixels
+with active fires.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Note in that dims are 37 x 82, store this so we can calc. % fire pixels from total pixels</span></span>
-<span><span class="va">pixels</span> <span class="op">&lt;-</span> <span class="fl">37</span><span class="op">*</span><span class="fl">82</span></span>
+<code class="sourceCode R"><span><span class="co"># Note that there are 3034 pixels during data extraction. </span></span>
+<span><span class="co"># Store this so we can calc. % fire pixels from total pixels</span></span>
+<span><span class="va">pixels</span> <span class="op">&lt;-</span> <span class="fl">3034</span></span>
 <span></span>
 <span><span class="co"># % fire analysis </span></span>
 <span><span class="va">month_pc_ts</span> <span class="op">&lt;-</span> <span class="va">fire_mod_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>

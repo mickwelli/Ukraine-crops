@@ -214,19 +214,17 @@ and sufficiently account for correlation in the data with the given
 model structure.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Temporal autocorrelation plot</span></span>
-<span><span class="va">resids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/residuals.gam.html" class="external-link">residuals.gam</a></span><span class="op">(</span><span class="va">all_gam_inv</span><span class="op">)</span></span>
-<span><span class="va">acf_plot_ar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/acf.html" class="external-link">acf</a></span><span class="op">(</span><span class="va">resids</span>, type <span class="op">=</span> <span class="st">"correlation"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">acf_plot_ar</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;"></p>
+<span><span class="fu"><a href="https://rdrr.io/pkg/itsadug/man/check_resid.html" class="external-link">check_resid</a></span><span class="op">(</span><span class="va">all_gam</span>, ask<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;"><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-2.png" width="768" style="display: block; margin: auto;"><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-3.png" width="768" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Variogram for spatial autocorrelation</span></span>
+<span><span class="va">resids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/residuals.gam.html" class="external-link">residuals.gam</a></span><span class="op">(</span><span class="va">all_gam</span><span class="op">)</span></span>
 <span><span class="va">data_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>resids <span class="op">=</span> <span class="va">resids</span>, long <span class="op">=</span> <span class="va">NDVI_mod_df</span><span class="op">$</span><span class="va">x</span>, lat <span class="op">=</span> <span class="va">NDVI_mod_df</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span>
 <span><span class="fu">coordinates</span><span class="op">(</span><span class="va">data_pred</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="op">~</span><span class="va">long</span><span class="op">+</span><span class="va">lat</span></span>
 <span><span class="co"># Select a sample for compute efficiency  </span></span>
 <span><span class="va">var_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/gstat/man/variogram.html" class="external-link">variogram</a></span> <span class="op">(</span><span class="va">resids</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">data_pred</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data_pred</span><span class="op">)</span>, <span class="fl">10000</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span>  </span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">var_plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-2.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="Ukraine-NDVI-analysis_files/figure-html/unnamed-chunk-7-4.png" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="investigating-key-trends">Investigating Key Trends<a class="anchor" aria-label="anchor" href="#investigating-key-trends"></a>
