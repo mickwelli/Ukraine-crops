@@ -4,7 +4,7 @@ author: "Michael Wellington, Roger Lawes and Petra Kuhnert"
 date: "4 August 2022"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Ukraine NDVI Analysis}
+  %\VignetteIndexEntry{Ukraine Ship Analysis}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
@@ -12,34 +12,40 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(knitr)
-library(tidyverse)
+library(ggplot2)
 library(sf)
 library(scales)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggthemes)
 library(ggspatial)
+library(ggsci)
 library(raster)
+library(tidyverse)
 library(ggnewscale)
 library(gganimate)
-library(gifski)
+library(lubridate)
+library(cowplot)
 
 
 library(UkraineCrops)
-
+data(cargo_year_df)
+data(Port_activity_ggdf)
 
 ```
 
 ## Overview
 The following script accompanies the paper by Wellington et al. (2022) that explores the shipping data and in particular, cargo ship routes between 2021 and 2022 for ports around the Ukraine.  
 
-We first load the library. This example demonstrates how to generate the map, though shipping data is not available in the vignette due to its size. The data can be downloaded from [EMODNET](https://www.emodnet-humanactivities.eu/view-data.php).
+We first load the library and raster data object. This example demonstrates how to generate the map and plots. The raster data has been pre-processed as described in the manuscript. The original data can be downloaded from [EMODNET](https://www.emodnet-humanactivities.eu/view-data.php).
 ```{r echo = TRUE, eval = FALSE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 
 library(UkraineCrops)
-
+data(cargo_year_df)
+data(Port_activity_ggdf)
 ```
+
+# Data Curation
 We curate a dataset and map constrained to the the major ports in and out of Ukraine.
 
 
@@ -60,59 +66,84 @@ world_area <- world %>%  dplyr::filter(name %in% c('Ukraine', 'Russia',
                                                    'Greece'))
 ```
 
+# Map Generation
 
-We now plot the shipping routes through the Black Sea between 2021 and 2022 for January through to June. This is a demonstration of Figure 4 of Wellington et al. (2022), without the route density data.
-
+We now generate the plot the shipping routes through the Black Sea between 2021 and 2022 for January through to August.
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
-
-facet_map_vert <- ggplot() + 
+facet_map <- ggplot() + 
   geom_sf(data = world_area, fill="grey", show.legend=FALSE) + 
   coord_sf(xlim = c(25.5, 43.5), ylim = c(40.1, 48.1), expand = FALSE) + 
   xlab('Longitude') + ylab('Latitude') + 
   theme(panel.grid.major = 
           element_line(color = gray(.5), linetype = 'dashed', size = 0.5),
         panel.background = element_rect(fill = 'aliceblue')) +
-  #new_scale_fill() +
-  #geom_raster(data = ships_war_df, aes(x=x, y=y, fill=value)) +
+  new_scale_fill() +
+  geom_raster(data = cargo_year_df, aes(x=x, y=y, fill=value)) +
   scale_fill_viridis_c(limits = c(0, 100), oob = scales::squish, 
-                       name=expression(paste("Route Density/", km^2, "/month")),
+                       name=expression(paste("Route Density/", km^2)),
                        alpha=0.5) +
   annotate(geom = "text", x = 40.3, y = 45.6, label = "RUSSIA", 
-           color = "grey28", size = 3) +
+           color = "grey28", size = 4) +
   annotate(geom = "text", x = 33, y = 47.5, label = "UKRAINE", 
-           color = "grey28", size = 3) +
+           color = "grey28", size = 4) +
   annotate(geom = "text", x = 34, y = 40.7, label = "TURKEY", 
            color = "grey28", size = 3) +
   annotate(geom = "text", x = 28.4, y = 47.4, label = "MOLDOVA", 
-           color = "grey28", size = 1.2, angle=-50) +
+           color = "grey28", size = 1.4, angle=-50) +
   annotate(geom = "text", x = 42.4, y = 42.6, label = "GEORGIA", 
-           color = "grey28", size = 1.4, angle=-40) +
+           color = "grey28", size = 1.8, angle=-40) +
   annotate(geom = "text", x = 26.9, y = 45.5, label = "ROMANIA", 
-           color = "grey28", size = 1.7, angle=-40) +
+           color = "grey28", size = 2.0, angle=-40) +
   annotate(geom = "text", x = 26.7, y = 43.0, label = "BULGARIA", 
-           color = "grey28", size = 1.1, angle=-40) +
+           color = "grey28", size = 1.2, angle=-40) +
   annotate(geom = "text", x = 36.5, y = 46.2, label = "Sea of Azov", 
-           fontface = "italic", color = "grey22", size = 1.3) +
+           fontface = "italic", color = "grey22", size = 2.1) +
   annotate(geom = "text", x = 34.3, y = 43.4, label = "Black Sea", 
-           fontface = "italic", color = "grey22", size = 3) +
+           fontface = "italic", color = "grey22", size = 4) +
   annotate(geom = "text", x = 37.6, y = 47.1, label = "Mariupol", 
-           fontface = "bold", color = "black", size = 2) +
+           fontface = "bold", color = "black", size = 3) +
   annotate(geom = "text", x = 37.8, y = 44.7, label = "Novorossiysk", 
-           fontface = "bold", color = "black", size = 2) +
-  annotate(geom = "text", x = 30.8, y = 46.5, label = "Odesa", 
-           fontface = "bold", color = "black", size = 2) +
+           fontface = "bold", color = "black", size = 3) +
+  annotate(geom = "text", x = 30.8, y = 46.8, label = "Odesa", 
+           fontface = "bold", color = "black", size = 3) +
+  annotate(geom = "text", x = 29.5, y = 45.4, label = "Danube Delta", 
+           fontface = "bold", color = "black", size = 3) +
   annotate(geom = "text", x = 28.7, y = 44.1, label = "Constanta", 
-           fontface = "bold", color = "black", size = 2) +
+           fontface = "bold", color = "black", size = 3) +
+  #annotation_scale(location = 'bl', width_hint = 0.5, height = unit(0.1, "cm")) + 
   annotation_north_arrow(location = 'tr', which_north = 'true',
                          pad_x = unit(0.05, 'in'), pad_y = unit(0.05, 'in'), 
                          style = north_arrow_fancy_orienteering,
                          height= unit(0.5, "cm"),
                          width= unit(0.5, "cm")) + 
-  #facet_grid(month_b~year) +
+  facet_grid(~year) +
   theme(legend.position="bottom")
 
-facet_map_vert
+```
 
+# Plot Generation
+
+We need to generate the second plot, which shows the cumulative shipping route density at different port centres. Again, we are using pre-processed data in this vignette. Details of pre-processing can be found in Wellington et al. (reference below).
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
+Activity_month_plot <- ggplot(data=Port_activity_ggdf) + geom_line(aes(x=month, y=activity_cumsum, col=year_fac), size=2) +
+  facet_wrap(~port, scale="free_y", nrow=3) + theme_bw() + scale_x_continuous(breaks = 1:12, 
+        labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')) +
+  labs(x="Month", y=expression(paste("Cumulative Route Density/", km^2))) + theme(legend.title=element_blank()) +
+  scale_color_manual(values = c("purple", "orange"))
+
+```
+
+# Formatting Final Plot
+
+Finally, we can assemble the plot combining a mapped comparison and cumulative route density.
+
+```{r echo = TRUE, fig.align='center', fig.height=10, fig.width=8, warning=FALSE, messages=FALSE}
+Ship_plot <- ggdraw() +
+  draw_plot(Activity_month_plot, x=0,y=0, width=1, height=0.5) +
+  draw_plot(facet_map, x=0, y=0.5, width=1, height=0.5) +
+  theme(plot.background = element_rect(fill="white", color = NA))
+Ship_plot
 
 ```
 
