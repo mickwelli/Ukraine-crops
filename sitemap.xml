@@ -28,12 +28,24 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
+    <loc>/reference/cargo_year_df.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
     <loc>/reference/NDVI_mod_df.html</loc>
   </url>
   <url>
+    <loc>/reference/npp_mod_df.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Port_activity_ggdf.html</loc>
+  </url>
+  <url>
     <loc>/reference/Ukr_bnds.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Ukr_FAOSTAT.html</loc>
   </url>
 </urlset>
