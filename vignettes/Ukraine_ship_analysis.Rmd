@@ -136,7 +136,7 @@ Activity_month_plot <- ggplot(data=Port_activity_ggdf) + geom_line(aes(x=month, 
 
 # Formatting Final Plot
 
-Finally, we can assemble the plot combining a mapped comparison and cumulative route density.
+We can now assemble the plot combining a mapped comparison and cumulative route density.
 
 ```{r echo = TRUE, fig.align='center', fig.height=10, fig.width=8, warning=FALSE, messages=FALSE}
 Ship_plot <- ggdraw() +
@@ -147,6 +147,25 @@ Ship_plot
 
 ```
 
+# Calculate % change
+
+Finally, we'll calculate the percentage change in shipping activity, year on year to August.
+
+```{r echo = TRUE, fig.align='center', fig.height=10, fig.width=8, warning=FALSE, messages=FALSE}
+
+Port_activity_ggdf %>% filter(month==8, port=='Odesa')
+(115-312)/312*100
+
+Port_activity_ggdf %>% filter(month==8, port=='Mariupol')
+(98.1-266)/266*100
+```
+Interesting that activity at both ports decreased by 63%, which roughly equates to them being closed in 5 of 8 months (5/8*100 = 62.5%). Final calculation for the increase in activity at the Danube Delta below.
+
+```{r echo = TRUE, fig.align='center', fig.height=10, fig.width=8, warning=FALSE, messages=FALSE}
+Port_activity_ggdf %>% filter(month==8, port=='Danube Delta')
+(85.3-47.5)/85.3*100
+
+```
 
 # References
 

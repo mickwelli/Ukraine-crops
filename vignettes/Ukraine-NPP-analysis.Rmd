@@ -157,7 +157,7 @@ Ukr_year_sm_ggplot <- ggplot() + geom_line(aes(y=Ukr_year_smplot$fv$fit,
 We will also generate a bar plot showing the total crop production tonnage in Ukraine from 2010 to 2020 and the crops comprising it. These data were taken from the [FAOSAT](https://www.fao.org/faostat/en/) database.
 
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
-Ukr_grain_dat <- Ukr_grain_dat %>% filter(Element == "Production")
+Ukr_grain_dat <- Ukr_FAOSTAT %>% filter(Element == "Production")
 Ukr_real_grain <- ggplot() + geom_bar(data=Ukr_grain_dat, aes(fill=Item, y=Value, x=Year), 
                                      position="stack", stat="identity") + scale_fill_npg() +
   theme_bw() + labs(fill='Crop Type', y= 'Total tonnes produced') + 
@@ -219,7 +219,8 @@ Ukr_realagree <- ggdraw() +
   theme(plot.background = element_rect(fill="white", color = NA))
 Ukr_realagree
 ```
-# Monthly effect and crop calendar
+
+## Monthly effect and crop calendar
 
 We'd also like to inspect the effect of the month on cropland NPP pre and post invasion. We can do this with the plot_smooth function again. The code chunk below also produces a crop calendar adapted from the [UN FAO GIEWS Factsheet](https://www.fao.org/giews/countrybrief/country/UKR/pdf/UKR.pdf).
 
