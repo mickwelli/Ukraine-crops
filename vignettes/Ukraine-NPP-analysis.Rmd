@@ -150,7 +150,7 @@ Ukr_year_sm_ggplot <- ggplot() + geom_line(aes(y=Ukr_year_smplot$fv$fit,
   geom_ribbon(aes(x=Ukr_year_smplot$fv$year, 
                   ymax= Ukr_year_smplot$fv$ul, ymin=Ukr_year_smplot$fv$ll), alpha=0.2) +
   scale_x_continuous(breaks=seq(2010,2022,1), limits = c(2009.5,2022)) + theme_bw() + ylim(c(0,330)) + 
-  labs(x="Year", y="NPP")
+  labs(x="Year", y=bquote('NPP'~(kgC/m^2)))
 
 ```
 
@@ -233,7 +233,7 @@ month_comp_plot <- ggplot(data=month_war_plot_dat) + geom_line(aes(x=month, y=fi
   geom_ribbon(aes(ymin=ll, ymax=ul, x=month, fill=war), alpha=0.2) + theme_bw() +
   scale_x_continuous(breaks = 1:12, 
         labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')) +
-  labs(y='NPP', x='Month') +
+  labs(y=bquote('NPP'~(kgC/m^2)), x='Month') +
   theme(legend.title=element_blank()) + scale_fill_npg()
 
 colors <- c("Sowing" = "brown", "Growing" = "darkgreen", "Harvest" = "orange")
