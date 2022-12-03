@@ -1,0 +1,345 @@
+---
+title: "Ukraine GPP Analysis"
+author: "Michael Wellington, Roger Lawes and Petra Kuhnert"
+date: "4 August 2022"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Ukraine GPP Analysis}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(stringr)
+library(tidyverse)
+library(gratia)
+library(mgcv)
+library(rgdal)
+library(sf)
+library(mgcViz)
+library(scales)
+library(gridExtra)
+library(ggsci)
+library(itsadug)
+library(cowplot)
+library(maps)
+library(gstat)
+library(Vizumap)
+library(ggpubr)
+
+library(UkraineCrops)
+data(NPP_mod_df)
+data(Ukr_bnds)
+data(Ukr_FAOSTAT)
+```
+
+## Overview
+The following script accompanies the paper by Wellington et al. (2022) that explores crop production and grain exports in Ukraine.  This first vignette focuses on trends in crop production using Net Primary Productivity (NPP).
+
+
+## Trend Analysis
+
+# Reading in relevant datasets
+
+We load in NPP data clipped to Ukraine and load in the relevant shape file. These datasets are also available in the `/data` and `/inst/extdata` directories and can be read in using the `readRDS` and `st_read`  commands respectively.
+
+```{r echo = TRUE, eval = FALSE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+library(UkraineCrops)
+
+data(GPP_mod_df)
+data(Ukr_bnds)
+data(Ukr_FAOSTAT)
+```
+
+# Fitting the Generalised Additive Model (GAM)
+
+We fit a Generalised Additive Model (GAM) (Wood 2006) assuming a Gaussian distribution for the response variable, NPP and include smooth terms for year, season, space and relevant interactions, which consist of season within year, and space and time. 
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+all_f <- GPP ~  
+  # smooth term for year
+  s(year, bs="cr", k=12) + 
+  # cyclic term for season
+  s(month, bs="cc", k=12) +  
+  # smooth term for space
+  s(x,y, bs='gp', k=50)  +                
+  # seasonal within year
+  ti(month, year, bs = c("cc", "cr"), k = c(12,12)) +  
+  # space x time
+  ti(x, y, year, d = c(2, 1), bs = c("gp", "cr"), 
+     k = c(50,12), m=list(2, NA))  
+
+
+```
+
+We then add in the factor `inv` which allows us to investigate a pre and post invasion effect.
+
+We also explore a GAM structure that fits a term reflecting the pre (2012-21) and post war (2022) periods.  This term which we refer to as `war` represents a binary variable where 1 indicates year 2022 when the war began.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+all_f_war <- GPP ~  
+  # smooth term for year
+  war + 
+  # cyclic term for season
+  s(month, bs="cc", k=12, by=war) +  
+  # smooth term for space
+  s(x,y, bs='gp', k=50, by=war) +
+  # space x time
+  ti(x, y, month, d = c(2, 1), bs = c("gp", "cr"), 
+     k = c(50,12), m=list(2, NA), by=war)  
+```
+
+We now fit each model using the `mgcv` package in `R` and store the results. To accommodate temporal dependencies we fit a correlation term in each model that was the result of an iterative process as outlined in Wood et al. (2017).  The final model fit for the invasion model is presented here from which we extract effect direction and size. 
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+# Run GAMs for large datasets
+all_gam <- bam(all_f, data=GPP_mod_df, discrete=TRUE, nthreads=8, rho=0.8)
+all_gam_war <- bam(all_f_war, data=GPP_mod_df, discrete=TRUE, nthreads=8, rho=0.6)
+# Output shows effect of the invasion period on cropland GPP
+summary(all_gam_war)
+```
+
+# Model Checking
+
+We examine the fit of the model and check for temporal and spatial autocorrelation in the residuals.  These diagnostics are examined below and sufficiently account for correlation in the data with the given model structure.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+# Temporal autocorrelation plot
+check_resid(all_gam, ask=FALSE)
+
+# Variogram for spatial autocorrelation
+resids <- residuals.gam(all_gam)
+data_pred <- data.frame(resids = resids, long = GPP_mod_df$x, lat = GPP_mod_df$y)
+coordinates(data_pred) <- ~long+lat
+# Select a sample for compute efficiency  
+var_plot <- variogram (resids ~ 1, data = data_pred[sample(1:nrow(data_pred), 10000),])  
+plot(var_plot)
+```
+
+
+# Investigating trends and agreement with ground data
+
+We generate a summed effect of year plot, extract data from it, and pass it to a ggplot2 object.
+
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
+
+Ukr_year_smplot <- plot_smooth(all_gam, view='year', rm.ranef = F)
+Ukr_year_sm_ggplot <- ggplot() + geom_line(aes(y=Ukr_year_smplot$fv$fit,
+                                           x=Ukr_year_smplot$fv$year)) +
+  geom_ribbon(aes(x=Ukr_year_smplot$fv$year, 
+                  ymax= Ukr_year_smplot$fv$ul, ymin=Ukr_year_smplot$fv$ll), alpha=0.2) +
+  scale_x_continuous(breaks=seq(2010,2022,1), limits = c(2009.5,2022)) + theme_bw() + ylim(c(0,550)) + 
+  labs(x="Year", y=bquote('GPP'~(kgC/m^2)))
+
+```
+
+We will also generate a bar plot showing the total crop production tonnage in Ukraine from 2010 to 2020 and the crops comprising it. These data were taken from the [FAOSAT](https://www.fao.org/faostat/en/) database.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE, messages=FALSE}
+Ukr_grain_dat <- Ukr_FAOSTAT %>% filter(Element == "Production")
+Ukr_real_grain <- ggplot() + geom_bar(data=Ukr_grain_dat, aes(fill=Item, y=Value, x=Year), 
+                                     position="stack", stat="identity") + scale_fill_npg() +
+  theme_bw() + labs(fill='Crop Type', y= 'Total tonnes produced') + 
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  scale_x_continuous(breaks=seq(2001,2021, 1))
+```
+
+Before we format the final plot, we'll perform a correlation test to check agreement between total crop production from FAOSTAT data and our NPP model. First of all, we extract the prediction terms for the year effect from our GAM.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+Ukr_annual_preds_terms <- predict(all_gam, type="iterms",  ## Predict without new data
+                                 se.fit=TRUE) 
+head(Ukr_annual_preds_terms$fit)
+Ukr_annual_preds_fit <- as.data.frame(Ukr_annual_preds_terms$fit)
+Ukr_annual_preds_fit$year <- GPP_mod_df$year
+names(Ukr_annual_preds_fit) <- c('year_hat', 'month_hat', 'space_hat', 'yxm_hat', 'yxs_hat', 'year')
+
+Ukr_annual_terms <- Ukr_annual_preds_fit %>% group_by(year) %>% 
+  summarise(year_term=mean(year_hat)) %>% filter(year<2021)
+```
+
+We'll also summarise the crop production data and create a dataframe prior to the correlation test.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+Ukr_grainprod_annual <- Ukr_grain_dat %>% group_by(Year) %>% filter(Element =="Production") %>% 
+  summarise(tonnes=sum(Value))
+
+Ukr_corr_df <- bind_cols(Ukr_grainprod_annual$tonnes, Ukr_annual_terms$year_term)
+names(Ukr_corr_df) <- c("RealTonnes", "YearTerms")
+```
+
+Let's inspect the relationship to see if it is linear before formally conducting the test.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+ggscatter(data = Ukr_corr_df, x = 'YearTerms', y = 'RealTonnes', 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Predicted GPP term", ylab = "Real T crop produced")
+
+```
+
+Check both columns for normality and conduct a correlation test.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+
+shapiro.test(Ukr_grainprod_annual$tonnes)
+shapiro.test(Ukr_annual_terms$year_term)
+cor.test(Ukr_grainprod_annual$tonnes, Ukr_annual_terms$year_term, method="pearson", alternative="greater")
+
+```
+
+Finally, we can plot the summed effect of year alongside the real production data.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+Ukr_realagree <- ggdraw() +
+  draw_plot(Ukr_year_sm_ggplot, x=0, y=0.5, width=0.915, height=0.5) +
+  draw_plot(Ukr_real_grain, x=0, y=0, width=1, height=0.5) +
+  theme(plot.background = element_rect(fill="white", color = NA))
+Ukr_realagree
+```
+
+## Monthly effect and crop calendar
+
+We'd also like to inspect the effect of the month on cropland NPP pre and post invasion. We can do this with the plot_smooth function again. The code chunk below also produces a crop calendar adapted from the [UN FAO GIEWS Factsheet](https://www.fao.org/giews/countrybrief/country/UKR/pdf/UKR.pdf).
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+month_war_plot <- plot_smooth(all_gam_war, view="month",plot_all="war", rm.ranef = F)
+month_war_plot_dat <- month_war_plot$fv %>% select(war, month, fit, ll, ul) %>% 
+  filter(war=="Pre-invasion" | month<12&month>2.8)
+month_war_plot_dat$month_abb <- month.abb[month_war_plot_dat$month]
+
+month_comp_plot <- ggplot(data=month_war_plot_dat) + geom_line(aes(x=month, y=fit, col=war)) +
+  geom_ribbon(aes(ymin=ll, ymax=ul, x=month, fill=war), alpha=0.2) + theme_bw() +
+  scale_x_continuous(breaks = 1:12, 
+        labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')) +
+  labs(y=bquote('NPP'~(kgC/m^2)), x='Month') +
+  theme(legend.title=element_blank()) + scale_fill_npg()
+
+colors <- c("Sowing" = "brown", "Growing" = "darkgreen", "Harvest" = "orange")
+
+Ukr_crop_cal <- ggplot() +
+  geom_linerange(aes(x= "Winter Cereals", ymin=as.Date("2013-01-01"), ymax=as.Date("2013-06-30"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Winter Cereals", ymin=as.Date("2013-06-30"), ymax=as.Date("2013-08-20"), color="Harvest"), size=5) +
+  geom_linerange(aes(x= "Winter Cereals", ymin=as.Date("2013-09-01"), ymax=as.Date("2013-10-30"), color="Sowing"), size=5) +
+  geom_linerange(aes(x= "Winter Cereals", ymin=as.Date("2013-10-30"), ymax=as.Date("2013-12-31"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Maize", ymin=as.Date("2013-05-01"), ymax=as.Date("2013-06-10"), color="Sowing"), size=5) +
+  geom_linerange(aes(x= "Maize", ymin=as.Date("2013-06-10"), ymax=as.Date("2013-10-01"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Maize", ymin=as.Date("2013-10-01"), ymax=as.Date("2013-11-30"), color="Harvest"), size=5) +
+  geom_linerange(aes(x= "Sunflower", ymin=as.Date("2013-04-01"), ymax=as.Date("2013-06-01"), color="Sowing"), size=5) +
+  geom_linerange(aes(x= "Sunflower", ymin=as.Date("2013-06-01"), ymax=as.Date("2013-08-31"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Sunflower", ymin=as.Date("2013-08-31"), ymax=as.Date("2013-10-30"), color="Harvest"), size=5) +
+  geom_linerange(aes(x= "Rapeseed", ymin=as.Date("2013-01-01"), ymax=as.Date("2013-06-30"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Rapeseed", ymin=as.Date("2013-06-30"), ymax=as.Date("2013-08-31"), color="Harvest"), size=5) +
+  geom_linerange(aes(x= "Rapeseed", ymin=as.Date("2013-08-31"), ymax=as.Date("2013-10-01"), color="Sowing"), size=5) +
+  geom_linerange(aes(x= "Rapeseed", ymin=as.Date("2013-10-01"), ymax=as.Date("2013-12-31"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Potatoes", ymin=as.Date("2013-04-01"), ymax=as.Date("2013-06-01"), color="Sowing"), size=5) +
+  geom_linerange(aes(x= "Potatoes", ymin=as.Date("2013-06-01"), ymax=as.Date("2013-09-01"), color="Growing"), size=5) +
+  geom_linerange(aes(x= "Potatoes", ymin=as.Date("2013-09-01"), ymax=as.Date("2013-10-31"), color="Harvest"), size=5) +
+  coord_flip() +  scale_y_date(lim = c(as.Date("2013-01-01"), as.Date("2013-12-31")),breaks=date_breaks(width = "1 month"), labels = date_format("%b"))+
+  labs(x="", y="Month") + theme_bw()+ scale_color_manual(values = colors) + theme(legend.title=element_blank())
+```
+
+Now we can combine the plots.
+
+```{r echo = TRUE, fig.align='center', fig.height=8, fig.width=8, warning=FALSE}
+Ukr_cropplots <- ggdraw() +
+  draw_plot(month_comp_plot, x=0.075, y=0.5, width=0.91, height=0.5) +
+  draw_plot(Ukr_crop_cal, x=0, y=0, width=1, height=0.5)+
+  theme(plot.background = element_rect(fill="white", color = NA))
+Ukr_cropplots
+
+```
+
+# Generate a spatial plot with uncertainty
+
+We will use the Vizumap package to compare the distribution of NPP pre and post invasion and visualise uncertainty associated with the estimate (Lucchesi, 2021). First, we extract data from the GAMs.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+space_nowar <- fvisgam(all_gam_war, view = c("x", "y"), 
+                       cond = list(war = "Pre-invasion"),
+                       main = "Pre-invasion", rm.ranef = T,
+                       n.grid=100,
+                       too.far=0.01)
+
+# Extract data for plotting spatial term 
+space_nowar_dat <- space_nowar$fv
+space_nowar_dat$SE <- space_nowar_dat$CI/1.96
+
+# Rpt for war
+space_war <- fvisgam(all_gam_war, view = c("x", "y"), 
+                       cond = list(war = "Post-invasion"),
+                       main = "Post-invasion", rm.ranef = T,
+                       n.grid=100,
+                       too.far=0.01)
+
+# Extract data for plotting spatial term
+space_war_dat <- space_war$fv
+space_war_dat$SE <- space_war_dat$CI/1.96
+
+
+```
+
+Next, we use Vizumap functions to build a palette and colour key.
+
+```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
+# Create palette
+npp_pal <- build_palette(name = "usr", 
+                          colrange = list(colour = c("chartreuse4", "darkblue"), 
+                                          difC = c(3, 4)))
+view(npp_pal)
+
+# creating df for Vizumap plotting
+space_npp_dat <- bind_rows(space_nowar_dat, space_war_dat)
+npp_war_df <- read.uv(data = space_npp_dat, estimate = "fit", 
+                       error = "SE")
+names(npp_war_df)[c(1, 5,6)] <- c("Estimate", "long", "lat")
+
+# build key
+UKey <- build_bkey(data = npp_war_df, terciles = T, palette = npp_pal)
+k <- view(UKey)
+  
+nppBivMap <- build_bmap(data = npp_war_df, terciles = T, 
+                           palette = npp_pal)
+```
+
+Finally, we can build the Vizumap plot.
+
+```{r echo = TRUE, fig.align='center', fig.height=8, fig.width=8, fig.asp=.6, warning=FALSE}
+obj <- nppBivMap
+obj_cropped <- exclude.too.far(obj$output_data$long, obj$output_data$lat, 
+                               npp_mod_df$x, npp_mod_df$y, dist=0.015)
+
+m <- ggplot() + 
+    geom_raster(data = obj$output_data[!obj_cropped,], 
+                aes(x = long, y = lat, fill = hex_code)) +
+    facet_wrap(~war, nrow=2) + scale_fill_identity() + coord_quickmap() +  
+    xlab("") + ylab("") + geom_sf(data=Ukr_bnds, alpha=0) + theme_bw()
+  
+mk <- ggdraw() +
+  draw_plot(m, x=0, y=0, width=0.6, height=1) +
+  draw_plot(k, x=0.6, y=0, width = 0.4, height=1)+
+  theme(plot.background = element_rect(fill="white", color = NA))
+mk
+
+```
+
+# References
+
+Lucchesi, L., Kuhnert, P., Wikle, C. (2021). Vizumap: an R package for visualising uncertainty in spatial data. Journal of Open Source Software, 6(59), 2409, https://doi.org/10.21105/joss.02409
+
+Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine, Nature Food, Under Review.
+
+Wood, S. N., Li, Z., Shaddick, G. & Augustin, N. H. (2017) Generalized Additive Models for Gigadata: Modeling the U.K. Black 166 Smoke Network Daily Data. J. Am. Stat. Assoc. 112, 1199–1210, DOI: 10.1080/01621459.2016.1195744.
+
+Wood, S. N. (2006) Generalized additive models: an introduction with R, Chapman and Hall/CRC.
+
+
