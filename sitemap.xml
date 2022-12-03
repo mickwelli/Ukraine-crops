@@ -7,6 +7,9 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/Ukraine-GPP-analysis.html</loc>
+  </url>
+  <url>
     <loc>/articles/Ukraine-NDVI-analysis.html</loc>
   </url>
   <url>
@@ -29,6 +32,9 @@
   </url>
   <url>
     <loc>/reference/cargo_year_df.html</loc>
+  </url>
+  <url>
+    <loc>/reference/GPP_mod_df.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
