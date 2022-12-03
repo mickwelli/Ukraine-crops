@@ -2,7 +2,7 @@
 #' 
 #' @description Port activity summarised across space for 2021 and to August 2022. Data originally from EMODNET.
 #' 
-#' @format A data frame comprising 95 rows and 9 columns. 
+#' @format A data frame comprising 100 rows and 9 columns. 
 #' \describe{
 #'    \item{port}{Name of port zone}
 #'    \item{name}{Layer name from raster file}

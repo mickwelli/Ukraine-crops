@@ -2,7 +2,7 @@
 #' 
 #' @description Cargo shipping route density through the Black Sea to August 2021 and to August 2022. Data originally from EMODNET.
 #' 
-#' @format A data frame comprising 852515 rows and 4 columns. 
+#' @format A data frame comprising 860132 rows and 4 columns. 
 #' \describe{
 #'    \item{year}{year of route density data}
 #'    \item{x}{longitude}

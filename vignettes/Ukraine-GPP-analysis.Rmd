@@ -31,7 +31,7 @@ library(Vizumap)
 library(ggpubr)
 
 library(UkraineCrops)
-data(NPP_mod_df)
+data(GPP_mod_df)
 data(Ukr_bnds)
 data(Ukr_FAOSTAT)
 ```
@@ -149,7 +149,7 @@ Ukr_real_grain <- ggplot() + geom_bar(data=Ukr_grain_dat, aes(fill=Item, y=Value
                                      position="stack", stat="identity") + scale_fill_npg() +
   theme_bw() + labs(fill='Crop Type', y= 'Total tonnes produced') + 
   scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
-  scale_x_continuous(breaks=seq(2001,2021, 1))
+  scale_x_continuous(breaks=seq(2010,2021, 1), limit=c(2010, 2022))
 ```
 
 Before we format the final plot, we'll perform a correlation test to check agreement between total crop production from FAOSTAT data and our NPP model. First of all, we extract the prediction terms for the year effect from our GAM.
@@ -200,10 +200,12 @@ cor.test(Ukr_grainprod_annual$tonnes, Ukr_annual_terms$year_term, method="pearso
 Finally, we can plot the summed effect of year alongside the real production data.
 
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
-Ukr_realagree <- ggdraw() +
-  draw_plot(Ukr_year_sm_ggplot, x=0, y=0.5, width=0.915, height=0.5) +
-  draw_plot(Ukr_real_grain, x=0, y=0, width=1, height=0.5) +
-  theme(plot.background = element_rect(fill="white", color = NA))
+Ukr_realagree <- ggarrange(Ukr_year_sm_ggplot,Ukr_real_grain, 
+          labels = NULL,
+          ncol = 1, nrow = 2,
+          common.legend = TRUE, legend = "bottom",
+          align = "hv",
+          font.label = list(size = 10, color = "black", face = "bold", family = NULL, position = "top"))
 Ukr_realagree
 ```
 
@@ -336,7 +338,7 @@ mk
 
 Lucchesi, L., Kuhnert, P., Wikle, C. (2021). Vizumap: an R package for visualising uncertainty in spatial data. Journal of Open Source Software, 6(59), 2409, https://doi.org/10.21105/joss.02409
 
-Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine, Nature Food, Under Review.
+Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine.
 
 Wood, S. N., Li, Z., Shaddick, G. & Augustin, N. H. (2017) Generalized Additive Models for Gigadata: Modeling the U.K. Black 166 Smoke Network Daily Data. J. Am. Stat. Assoc. 112, 1199–1210, DOI: 10.1080/01621459.2016.1195744.
 

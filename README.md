@@ -29,4 +29,4 @@ Wellington et al., (2022). UkraineCrop: an R package housing reproducible code t
 
 ## References
 
-Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine, Nature Food, Under Review.
+Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine.

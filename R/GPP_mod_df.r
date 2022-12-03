@@ -1,14 +1,14 @@
-#' npp_mod_df
+#' GPP_mod_df
 #' 
-#' @description NPP MODIS data represented as a data frame extracted
+#' @description GPP MODIS data represented as a data frame extracted
 #' for 1st of January 2010 through to August 2022.
 #' 
-#' @format A data frame comprising 813008 rows and 10 columns. 
+#' @format A data frame comprising 1283803 rows and 10 columns. 
 #' \describe{
 #'    \item{date}{date of NPP capture}
 #'    \item{x}{longitude}
 #'    \item{y}{latitude}
-#'    \item{NPP}{Net Primary Productivity}
+#'    \item{GPP}{Gross Primary Productivity}
 #'    \item{year}{year that NPP was captured}
 #'    \item{month}{month that NPP was captured}
 #'    \item{day}{day of month that NPP was captured}
@@ -16,6 +16,6 @@
 #'    \item{x_1}{longitude backup}
 #'    \item{y_1}{latitude backup}
 #'    }
-"npp_mod_df"
+"GPP_mod_df"
 
  

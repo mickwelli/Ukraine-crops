@@ -169,7 +169,7 @@ Port_activity_ggdf %>% filter(month==8, port=='Danube Delta')
 
 # References
 
-Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine, Nature Food, Under Review.
+Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine.
 
 
 
