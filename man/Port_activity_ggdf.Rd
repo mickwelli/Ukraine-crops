@@ -5,7 +5,7 @@
 \alias{Port_activity_ggdf}
 \title{Port_activity_ggdf}
 \format{
-A data frame comprising 95 rows and 9 columns. 
+A data frame comprising 100 rows and 9 columns. 
 \describe{
    \item{port}{Name of port zone}
    \item{name}{Layer name from raster file}

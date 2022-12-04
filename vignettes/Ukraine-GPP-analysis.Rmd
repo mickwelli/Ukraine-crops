@@ -341,6 +341,7 @@ Lucchesi, L., Kuhnert, P., Wikle, C. (2021). Vizumap: an R package for visualisi
 Wellington, M., Lawes, R., Kuhnert, P. (2022) Rapid monitoring of crop growth, grain exports, and fire patterns in Ukraine.
 
 Wood, S. N., Li, Z., Shaddick, G. & Augustin, N. H. (2017) Generalized Additive Models for Gigadata: Modeling the U.K. Black 166 Smoke Network Daily Data. J. Am. Stat. Assoc. 112, 1199–1210, DOI: 10.1080/01621459.2016.1195744.
+Wood, S. N., Li, Z., Shaddick, G. & Augustin, N. H. (2017) Generalized Additive Models for Gigadata: Modeling the U.K. Black 166 Smoke Network Daily Data. J. Am. Stat. Assoc. 112, 1199–1210, DOI: 10.1080/01621459.2016.1195744.
 
 Wood, S. N. (2006) Generalized additive models: an introduction with R, Chapman and Hall/CRC.
 

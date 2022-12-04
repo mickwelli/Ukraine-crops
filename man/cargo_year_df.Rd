@@ -5,7 +5,7 @@
 \alias{cargo_year_df}
 \title{cargo_year_df}
 \format{
-A data frame comprising 852515 rows and 4 columns. 
+A data frame comprising 860132 rows and 4 columns. 
 \describe{
    \item{year}{year of route density data}
    \item{x}{longitude}
