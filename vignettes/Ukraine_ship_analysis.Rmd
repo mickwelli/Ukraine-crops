@@ -159,7 +159,7 @@ Port_activity_ggdf %>% filter(month==9, port=='Odesa')
 Port_activity_ggdf %>% filter(month==9, port=='Mariupol')
 (134.67-332.55)/332.55*100
 ```
-Interesting that activity at Odesa and Mariupol decreased by 52 and 59%, respectively. This roughly equates to them being closed in 5 of 9 months (5/9*100 = 55.6%). Final calculation for the increase in activity at the Danube Delta below.
+Interesting that activity at Odesa and Mariupol decreased by 53% and 60%, respectively. This roughly equates to them being closed in 5 of 9 months (5/9*100 = 55.6%). Final calculation for the increase in activity at the Danube Delta below.
 
 ```{r echo = TRUE, fig.align='center', fig.height=10, fig.width=8, warning=FALSE, messages=FALSE}
 Port_activity_ggdf %>% filter(month==9, port=='Danube Delta')
