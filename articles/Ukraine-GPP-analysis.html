@@ -66,7 +66,7 @@
                         <h4 data-toc-skip class="author">Michael
 Wellington, Roger Lawes and Petra Kuhnert</h4>
             
-            <h4 data-toc-skip class="date">4 August 2022</h4>
+            <h4 data-toc-skip class="date">25 January 2023</h4>
       
       
       <div class="d-none name"><code>Ukraine-GPP-analysis.Rmd</code></div>
@@ -79,8 +79,8 @@ Wellington, Roger Lawes and Petra Kuhnert</h4>
 </h3>
 <p>The following script accompanies the paper by Wellington et
 al. (2022) that explores crop production and grain exports in Ukraine.
-This first vignette focuses on trends in crop production using Net
-Primary Productivity (NPP).</p>
+This first vignette focuses on trends in crop production using Gross
+Primary Productivity (GPP).</p>
 </div>
 <div class="section level3">
 <h3 id="trend-analysis">Trend Analysis<a class="anchor" aria-label="anchor" href="#trend-analysis"></a>
@@ -89,7 +89,7 @@ Primary Productivity (NPP).</p>
 <div class="section level2">
 <h2 id="reading-in-relevant-datasets">Reading in relevant datasets<a class="anchor" aria-label="anchor" href="#reading-in-relevant-datasets"></a>
 </h2>
-<p>We load in NPP data clipped to Ukraine and load in the relevant shape
+<p>We load in GPP data clipped to Ukraine and load in the relevant shape
 file. These datasets are also available in the <code>/data</code> and
 <code>/inst/extdata</code> directories and can be read in using the
 <code>readRDS</code> and <code>st_read</code> commands respectively.</p>
@@ -119,7 +119,7 @@ of season within year, and space and time.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">ti</a></span><span class="op">(</span><span class="va">month</span>, <span class="va">year</span>, bs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cc"</span>, <span class="st">"cr"</span><span class="op">)</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>,<span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="co"># space x time</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">ti</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">year</span>, d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, bs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gp"</span>, <span class="st">"cr"</span><span class="op">)</span>, </span>
-<span>     k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">12</span><span class="op">)</span>, m<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>  </span></code></pre></div>
+<span>     k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">13</span><span class="op">)</span>, m<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>  </span></code></pre></div>
 <p>We then add in the factor <code>inv</code> which allows us to
 investigate a pre and post invasion effect.</p>
 <p>We also explore a GAM structure that fits a term reflecting the pre
@@ -160,24 +160,24 @@ effect direction and size.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Parametric coefficients:</span></span>
 <span><span class="co">##                   Estimate Std. Error  t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">## (Intercept)      191.09962    0.09495 2012.712   &lt;2e-16 ***</span></span>
-<span><span class="co">## warPost-invasion  -1.65267    6.43545   -0.257    0.797    </span></span>
+<span><span class="co">## (Intercept)      191.09964    0.09465 2018.918  &lt; 2e-16 ***</span></span>
+<span><span class="co">## warPost-invasion  -2.47161    0.41756   -5.919 3.24e-09 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Approximate significance of smooth terms:</span></span>
 <span><span class="co">##                                    edf Ref.df         F p-value    </span></span>
-<span><span class="co">## s(month):warPre-invasion         9.998  10.00 386158.12  &lt;2e-16 ***</span></span>
-<span><span class="co">## s(month):warPost-invasion        8.992   9.00  29330.70  &lt;2e-16 ***</span></span>
-<span><span class="co">## s(x,y):warPre-invasion          48.528  48.92   3357.00  &lt;2e-16 ***</span></span>
-<span><span class="co">## s(x,y):warPost-invasion         44.154  45.40     16.74  &lt;2e-16 ***</span></span>
-<span><span class="co">## ti(month,x,y):warPre-invasion  490.490 519.83    627.08  &lt;2e-16 ***</span></span>
-<span><span class="co">## ti(month,x,y):warPost-invasion 340.912 388.60     89.06  &lt;2e-16 ***</span></span>
+<span><span class="co">## s(month):warPre-invasion         9.998  10.00 388543.14  &lt;2e-16 ***</span></span>
+<span><span class="co">## s(month):warPost-invasion        9.987  10.00  30197.84  &lt;2e-16 ***</span></span>
+<span><span class="co">## s(x,y):warPre-invasion          48.530  48.92   3377.65  &lt;2e-16 ***</span></span>
+<span><span class="co">## s(x,y):warPost-invasion         44.607  45.92     22.75  &lt;2e-16 ***</span></span>
+<span><span class="co">## ti(month,x,y):warPre-invasion  490.729 519.96    630.80  &lt;2e-16 ***</span></span>
+<span><span class="co">## ti(month,x,y):warPost-invasion 366.474 419.60     86.94  &lt;2e-16 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## R-sq.(adj) =  0.861   Deviance explained = 86.1%</span></span>
-<span><span class="co">## fREML = 6.5579e+06  Scale est. = 2493.2    n = 1283803</span></span></code></pre>
+<span><span class="co">## R-sq.(adj) =  0.862   Deviance explained = 86.2%</span></span>
+<span><span class="co">## fREML = 6.5967e+06  Scale est. = 2477.9    n = 1292171</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="model-checking">Model Checking<a class="anchor" aria-label="anchor" href="#model-checking"></a>
@@ -229,7 +229,7 @@ data were taken from the <a href="https://www.fao.org/faostat/en/" class="extern
 <span>                                     position<span class="op">=</span><span class="st">"stack"</span>, stat<span class="op">=</span><span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://nanx.me/ggsci/reference/scale_npg.html" class="external-link">scale_fill_npg</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">'Crop Type'</span>, y<span class="op">=</span> <span class="st">'Total tonnes produced'</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/unit_format.html" class="external-link">unit_format</a></span><span class="op">(</span>unit <span class="op">=</span> <span class="st">"M"</span>, scale <span class="op">=</span> <span class="fl">1e-6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">2010</span>,<span class="fl">2021</span>, <span class="fl">1</span><span class="op">)</span>, limit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2022</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">2010</span>,<span class="fl">2022</span>, <span class="fl">1</span><span class="op">)</span>, limit<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2009.5</span>, <span class="fl">2022</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Before we format the final plot, we’ll perform a correlation test to
 check agreement between total crop production from FAOSTAT data and our
 NPP model. First of all, we extract the prediction terms for the year
@@ -238,13 +238,13 @@ effect from our GAM.</p>
 <code class="sourceCode R"><span><span class="va">Ukr_annual_preds_terms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">all_gam</span>, type<span class="op">=</span><span class="st">"iterms"</span>,  <span class="co">## Predict without new data</span></span>
 <span>                                 se.fit<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Ukr_annual_preds_terms</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     s(year)  s(month)     s(x,y) ti(month,year) ti(year,x,y)</span></span>
-<span><span class="co">## 1 -7.206782 -166.4977 -14.672125       16.72331   -27.269094</span></span>
-<span><span class="co">## 2 -7.206782 -166.4977 -13.961324       16.72331   -23.459930</span></span>
-<span><span class="co">## 3 -7.206782 -166.4977  -9.994319       16.72331    -6.882217</span></span>
-<span><span class="co">## 4 -7.206782 -166.4977 -10.362108       16.72331    -9.312854</span></span>
-<span><span class="co">## 5 -7.206782 -166.4977 -10.624894       16.72331   -11.004132</span></span>
-<span><span class="co">## 6 -7.206782 -166.4977 -14.556385       16.72331   -18.299855</span></span></code></pre>
+<pre><code><span><span class="co">##     s(year)  s(month)    s(x,y) ti(month,year) ti(year,x,y)</span></span>
+<span><span class="co">## 1 -7.233708 -166.1777 -14.68356       16.45004   -27.265129</span></span>
+<span><span class="co">## 2 -7.233708 -166.1777 -14.02574       16.45004   -23.444105</span></span>
+<span><span class="co">## 3 -7.233708 -166.1777 -10.00935       16.45004    -7.011057</span></span>
+<span><span class="co">## 4 -7.233708 -166.1777 -10.42145       16.45004    -9.392004</span></span>
+<span><span class="co">## 5 -7.233708 -166.1777 -10.69893       16.45004   -11.056382</span></span>
+<span><span class="co">## 6 -7.233708 -166.1777 -14.63295       16.45004   -18.297377</span></span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Ukr_annual_preds_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">Ukr_annual_preds_terms</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="va">Ukr_annual_preds_fit</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;-</span> <span class="va">GPP_mod_df</span><span class="op">$</span><span class="va">year</span></span>
@@ -287,20 +287,20 @@ conducting the test.</p>
 <span><span class="co">##  Shapiro-Wilk normality test</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## data:  Ukr_annual_terms$year_term</span></span>
-<span><span class="co">## W = 0.93546, p-value = 0.4687</span></span></code></pre>
+<span><span class="co">## W = 0.93534, p-value = 0.4674</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test</a></span><span class="op">(</span><span class="va">Ukr_grainprod_annual</span><span class="op">$</span><span class="va">tonnes</span>, <span class="va">Ukr_annual_terms</span><span class="op">$</span><span class="va">year_term</span>, method<span class="op">=</span><span class="st">"pearson"</span>, alternative<span class="op">=</span><span class="st">"greater"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Pearson's product-moment correlation</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## data:  Ukr_grainprod_annual$tonnes and Ukr_annual_terms$year_term</span></span>
-<span><span class="co">## t = 2.7268, df = 9, p-value = 0.01167</span></span>
+<span><span class="co">## t = 2.7352, df = 9, p-value = 0.01151</span></span>
 <span><span class="co">## alternative hypothesis: true correlation is greater than 0</span></span>
 <span><span class="co">## 95 percent confidence interval:</span></span>
-<span><span class="co">##  0.2297834 1.0000000</span></span>
+<span><span class="co">##  0.2317292 1.0000000</span></span>
 <span><span class="co">## sample estimates:</span></span>
 <span><span class="co">##       cor </span></span>
-<span><span class="co">## 0.6726155</span></span></code></pre>
+<span><span class="co">## 0.6737394</span></span></code></pre>
 <p>Finally, we can plot the summed effect of year alongside the real
 production data.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
@@ -417,29 +417,29 @@ estimate (Lucchesi, 2021). First, we extract data from the GAMs.</p>
 <p>Next, we use Vizumap functions to build a palette and colour key.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create palette</span></span>
-<span><span class="va">npp_pal</span> <span class="op">&lt;-</span> <span class="fu">build_palette</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"usr"</span>, </span>
+<span><span class="va">gpp_pal</span> <span class="op">&lt;-</span> <span class="fu">build_palette</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"usr"</span>, </span>
 <span>                          colrange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chartreuse4"</span>, <span class="st">"darkblue"</span><span class="op">)</span>, </span>
 <span>                                          difC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">view</span><span class="op">(</span><span class="va">npp_pal</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">view</span><span class="op">(</span><span class="va">gpp_pal</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Ukraine-GPP-analysis_files/figure-html/unnamed-chunk-16-1.png" width="768" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># creating df for Vizumap plotting</span></span>
-<span><span class="va">space_npp_dat</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">space_nowar_dat</span>, <span class="va">space_war_dat</span><span class="op">)</span></span>
-<span><span class="va">npp_war_df</span> <span class="op">&lt;-</span> <span class="fu">read.uv</span><span class="op">(</span>data <span class="op">=</span> <span class="va">space_npp_dat</span>, estimate <span class="op">=</span> <span class="st">"fit"</span>, </span>
+<span><span class="va">space_gpp_dat</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">space_nowar_dat</span>, <span class="va">space_war_dat</span><span class="op">)</span></span>
+<span><span class="va">gpp_war_df</span> <span class="op">&lt;-</span> <span class="fu">read.uv</span><span class="op">(</span>data <span class="op">=</span> <span class="va">space_gpp_dat</span>, estimate <span class="op">=</span> <span class="st">"fit"</span>, </span>
 <span>                       error <span class="op">=</span> <span class="st">"SE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">npp_war_df</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>,<span class="fl">6</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Estimate"</span>, <span class="st">"long"</span>, <span class="st">"lat"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gpp_war_df</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>,<span class="fl">6</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Estimate"</span>, <span class="st">"long"</span>, <span class="st">"lat"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># build key</span></span>
-<span><span class="va">UKey</span> <span class="op">&lt;-</span> <span class="fu">build_bkey</span><span class="op">(</span>data <span class="op">=</span> <span class="va">npp_war_df</span>, terciles <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="va">npp_pal</span><span class="op">)</span></span>
+<span><span class="va">UKey</span> <span class="op">&lt;-</span> <span class="fu">build_bkey</span><span class="op">(</span>data <span class="op">=</span> <span class="va">gpp_war_df</span>, terciles <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="va">gpp_pal</span><span class="op">)</span></span>
 <span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">view</span><span class="op">(</span><span class="va">UKey</span><span class="op">)</span></span>
 <span>  </span>
-<span><span class="va">nppBivMap</span> <span class="op">&lt;-</span> <span class="fu">build_bmap</span><span class="op">(</span>data <span class="op">=</span> <span class="va">npp_war_df</span>, terciles <span class="op">=</span> <span class="cn">T</span>, </span>
-<span>                           palette <span class="op">=</span> <span class="va">npp_pal</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">nppBivMap</span> <span class="op">&lt;-</span> <span class="fu">build_bmap</span><span class="op">(</span>data <span class="op">=</span> <span class="va">gpp_war_df</span>, terciles <span class="op">=</span> <span class="cn">T</span>, </span>
+<span>                           palette <span class="op">=</span> <span class="va">gpp_pal</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, we can build the Vizumap plot.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="va">nppBivMap</span></span>
 <span><span class="va">obj_cropped</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/exclude.too.far.html" class="external-link">exclude.too.far</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">output_data</span><span class="op">$</span><span class="va">long</span>, <span class="va">obj</span><span class="op">$</span><span class="va">output_data</span><span class="op">$</span><span class="va">lat</span>, </span>
-<span>                               <span class="va">npp_mod_df</span><span class="op">$</span><span class="va">x</span>, <span class="va">npp_mod_df</span><span class="op">$</span><span class="va">y</span>, dist<span class="op">=</span><span class="fl">0.015</span><span class="op">)</span></span>
+<span>                               <span class="va">GPP_mod_df</span><span class="op">$</span><span class="va">x</span>, <span class="va">GPP_mod_df</span><span class="op">$</span><span class="va">y</span>, dist<span class="op">=</span><span class="fl">0.015</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_raster</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">obj</span><span class="op">$</span><span class="va">output_data</span><span class="op">[</span><span class="op">!</span><span class="va">obj_cropped</span>,<span class="op">]</span>, </span>
