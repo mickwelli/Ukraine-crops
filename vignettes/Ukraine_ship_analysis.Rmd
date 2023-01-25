@@ -1,7 +1,7 @@
 ---
 title: "Ukraine Ship Analysis"
 author: "Michael Wellington, Roger Lawes and Petra Kuhnert"
-date: "4 August 2022"
+date: "25 January 2023"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Ukraine Ship Analysis}

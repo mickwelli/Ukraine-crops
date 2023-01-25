@@ -1,7 +1,7 @@
 ---
 title: "Ukraine GPP Analysis"
 author: "Michael Wellington, Roger Lawes and Petra Kuhnert"
-date: "4 August 2022"
+date: "25 January 2023"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Ukraine GPP Analysis}
@@ -37,14 +37,14 @@ data(Ukr_FAOSTAT)
 ```
 
 ## Overview
-The following script accompanies the paper by Wellington et al. (2022) that explores crop production and grain exports in Ukraine.  This first vignette focuses on trends in crop production using Net Primary Productivity (NPP).
+The following script accompanies the paper by Wellington et al. (2022) that explores crop production and grain exports in Ukraine.  This first vignette focuses on trends in crop production using Gross Primary Productivity (GPP).
 
 
 ## Trend Analysis
 
 # Reading in relevant datasets
 
-We load in NPP data clipped to Ukraine and load in the relevant shape file. These datasets are also available in the `/data` and `/inst/extdata` directories and can be read in using the `readRDS` and `st_read`  commands respectively.
+We load in GPP data clipped to Ukraine and load in the relevant shape file. These datasets are also available in the `/data` and `/inst/extdata` directories and can be read in using the `readRDS` and `st_read`  commands respectively.
 
 ```{r echo = TRUE, eval = FALSE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 
@@ -72,7 +72,7 @@ all_f <- GPP ~
   ti(month, year, bs = c("cc", "cr"), k = c(12,12)) +  
   # space x time
   ti(x, y, year, d = c(2, 1), bs = c("gp", "cr"), 
-     k = c(50,12), m=list(2, NA))  
+     k = c(50,13), m=list(2, NA))  
 
 
 ```
@@ -149,7 +149,7 @@ Ukr_real_grain <- ggplot() + geom_bar(data=Ukr_grain_dat, aes(fill=Item, y=Value
                                      position="stack", stat="identity") + scale_fill_npg() +
   theme_bw() + labs(fill='Crop Type', y= 'Total tonnes produced') + 
   scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
-  scale_x_continuous(breaks=seq(2010,2021, 1), limit=c(2010, 2022))
+  scale_x_continuous(breaks=seq(2010,2022, 1), limit=c(2009.5, 2022))
 ```
 
 Before we format the final plot, we'll perform a correlation test to check agreement between total crop production from FAOSTAT data and our NPP model. First of all, we extract the prediction terms for the year effect from our GAM.
@@ -294,23 +294,23 @@ Next, we use Vizumap functions to build a palette and colour key.
 
 ```{r echo = TRUE, fig.align='center', fig.height=5, fig.width=8, fig.asp=.6, warning=FALSE}
 # Create palette
-npp_pal <- build_palette(name = "usr", 
+gpp_pal <- build_palette(name = "usr", 
                           colrange = list(colour = c("chartreuse4", "darkblue"), 
                                           difC = c(3, 4)))
-view(npp_pal)
+view(gpp_pal)
 
 # creating df for Vizumap plotting
-space_npp_dat <- bind_rows(space_nowar_dat, space_war_dat)
-npp_war_df <- read.uv(data = space_npp_dat, estimate = "fit", 
+space_gpp_dat <- bind_rows(space_nowar_dat, space_war_dat)
+gpp_war_df <- read.uv(data = space_gpp_dat, estimate = "fit", 
                        error = "SE")
-names(npp_war_df)[c(1, 5,6)] <- c("Estimate", "long", "lat")
+names(gpp_war_df)[c(1, 5,6)] <- c("Estimate", "long", "lat")
 
 # build key
-UKey <- build_bkey(data = npp_war_df, terciles = T, palette = npp_pal)
+UKey <- build_bkey(data = gpp_war_df, terciles = T, palette = gpp_pal)
 k <- view(UKey)
   
-nppBivMap <- build_bmap(data = npp_war_df, terciles = T, 
-                           palette = npp_pal)
+nppBivMap <- build_bmap(data = gpp_war_df, terciles = T, 
+                           palette = gpp_pal)
 ```
 
 Finally, we can build the Vizumap plot.
@@ -318,7 +318,7 @@ Finally, we can build the Vizumap plot.
 ```{r echo = TRUE, fig.align='center', fig.height=8, fig.width=8, fig.asp=.6, warning=FALSE}
 obj <- nppBivMap
 obj_cropped <- exclude.too.far(obj$output_data$long, obj$output_data$lat, 
-                               npp_mod_df$x, npp_mod_df$y, dist=0.015)
+                               GPP_mod_df$x, GPP_mod_df$y, dist=0.015)
 
 m <- ggplot() + 
     geom_raster(data = obj$output_data[!obj_cropped,], 
